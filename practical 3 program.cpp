@@ -8,84 +8,84 @@
 using namespace std;
 using namespace chrono;
 
-// ---------------- MAX HEAP ---------------- //
+// ---------- MAX HEAP ----------
 
-void buildMaxHeap(vector<int>& arr, int n, int index)
+void heapifyMax(vector<int>& arr, int n, int index)
 {
     int largest = index;
-    int leftChild = 2 * index + 1;
-    int rightChild = 2 * index + 2;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
 
-    if (leftChild < n && arr[leftChild] > arr[largest])
-        largest = leftChild;
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
 
-    if (rightChild < n && arr[rightChild] > arr[largest])
-        largest = rightChild;
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
 
     if (largest != index)
     {
         swap(arr[index], arr[largest]);
-        buildMaxHeap(arr, n, largest);
+        heapifyMax(arr, n, largest);
     }
 }
 
 void maxHeapSort(vector<int>& arr)
 {
-    int size = arr.size();
+    int n = arr.size();
 
-    // Create Max Heap
-    for (int i = size / 2 - 1; i >= 0; i--)
-        buildMaxHeap(arr, size, i);
+    // Build Max Heap
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapifyMax(arr, n, i);
 
-    // Sorting
-    for (int i = size - 1; i >= 1; i--)
+    // Extract elements one by one
+    for (int i = n - 1; i > 0; i--)
     {
         swap(arr[0], arr[i]);
-        buildMaxHeap(arr, i, 0);
+        heapifyMax(arr, i, 0);
     }
 }
 
-// ---------------- MIN HEAP ---------------- //
+// ---------- MIN HEAP ----------
 
-void buildMinHeap(vector<int>& arr, int n, int index)
+void heapifyMin(vector<int>& arr, int n, int index)
 {
     int smallest = index;
-    int leftChild = 2 * index + 1;
-    int rightChild = 2 * index + 2;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
 
-    if (leftChild < n && arr[leftChild] < arr[smallest])
-        smallest = leftChild;
+    if (left < n && arr[left] < arr[smallest])
+        smallest = left;
 
-    if (rightChild < n && arr[rightChild] < arr[smallest])
-        smallest = rightChild;
+    if (right < n && arr[right] < arr[smallest])
+        smallest = right;
 
     if (smallest != index)
     {
         swap(arr[index], arr[smallest]);
-        buildMinHeap(arr, n, smallest);
+        heapifyMin(arr, n, smallest);
     }
 }
 
 void minHeapSort(vector<int>& arr)
 {
-    int size = arr.size();
+    int n = arr.size();
 
-    // Create Min Heap
-    for (int i = size / 2 - 1; i >= 0; i--)
-        buildMinHeap(arr, size, i);
+    // Build Min Heap
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapifyMin(arr, n, i);
 
-    // Sorting
-    for (int i = size - 1; i >= 1; i--)
+    // Extract elements
+    for (int i = n - 1; i > 0; i--)
     {
         swap(arr[0], arr[i]);
-        buildMinHeap(arr, i, 0);
+        heapifyMin(arr, i, 0);
     }
 
-    // Convert descending result to ascending
+    // Min heap gives descending order, so reverse it
     reverse(arr.begin(), arr.end());
 }
 
-// ---------------- MAIN FUNCTION ---------------- //
+// ---------- MAIN ----------
 
 int main()
 {
@@ -94,20 +94,27 @@ int main()
     cout << "Enter number of elements: ";
     cin >> n;
 
+    if (n <= 0)
+    {
+        cout << "Invalid number of elements." << endl;
+        return 0;
+    }
+
     vector<int> data(n);
 
-    // Generate random numbers
-    srand(time(nullptr));
+    // Generate random values
+    srand(time(0));
 
     for (int i = 0; i < n; i++)
     {
         data[i] = rand() % 100000;
     }
 
+    // Make separate copies
     vector<int> maxHeapData = data;
     vector<int> minHeapData = data;
 
-    // -------- MAX HEAP SORT TIME -------- //
+    // ---------- MAX HEAP SORT ----------
 
     auto maxStart = high_resolution_clock::now();
 
@@ -115,7 +122,7 @@ int main()
 
     auto maxEnd = high_resolution_clock::now();
 
-    // -------- MIN HEAP SORT TIME -------- //
+    // ---------- MIN HEAP SORT ----------
 
     auto minStart = high_resolution_clock::now();
 
@@ -123,36 +130,42 @@ int main()
 
     auto minEnd = high_resolution_clock::now();
 
-    // Calculate execution time
-    auto maxNano = duration_cast<nanoseconds>(maxEnd - maxStart);
-    auto maxMicro = duration_cast<microseconds>(maxEnd - maxStart);
-    auto maxMilli = duration_cast<milliseconds>(maxEnd - maxStart);
-
-    auto minNano = duration_cast<nanoseconds>(minEnd - minStart);
-    auto minMicro = duration_cast<microseconds>(minEnd - minStart);
-    auto minMilli = duration_cast<milliseconds>(minEnd - minStart);
-
-    // -------- DISPLAY RESULTS -------- //
+    // Calculate execution times
+    auto maxTime = maxEnd - maxStart;
+    auto minTime = minEnd - minStart;
 
     cout << "\n====================================\n";
     cout << "        MAX HEAP SORT RESULT\n";
     cout << "====================================\n";
+
     cout << "Time in Nanoseconds  : "
-         << maxNano.count() << " ns\n";
+         << duration_cast<nanoseconds>(maxTime).count()
+         << " ns\n";
+
     cout << "Time in Microseconds : "
-         << maxMicro.count() << " us\n";
+         << duration_cast<microseconds>(maxTime).count()
+         << " us\n";
+
     cout << "Time in Milliseconds : "
-         << maxMilli.count() << " ms\n";
+         << duration_cast<milliseconds>(maxTime).count()
+         << " ms\n";
+
 
     cout << "\n====================================\n";
     cout << "        MIN HEAP SORT RESULT\n";
     cout << "====================================\n";
+
     cout << "Time in Nanoseconds  : "
-         << minNano.count() << " ns\n";
+         << duration_cast<nanoseconds>(minTime).count()
+         << " ns\n";
+
     cout << "Time in Microseconds : "
-         << minMicro.count() << " us\n";
+         << duration_cast<microseconds>(minTime).count()
+         << " us\n";
+
     cout << "Time in Milliseconds : "
-         << minMilli.count() << " ms\n";
+         << duration_cast<milliseconds>(minTime).count()
+         << " ms\n";
 
     return 0;
 }
