@@ -1,17 +1,20 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include <cstdlib>
+#include <algorithm>
+
 using namespace std;
 using namespace chrono;
 
 // Bubble Sort
 void bubbleSort(int arr[], int n)
 {
-    for(int i = 0; i < n - 1; i++)
+    for (int i = 0; i < n - 1; i++)
     {
-        for(int j = 0; j < n - i - 1; j++)
+        for (int j = 0; j < n - i - 1; j++)
         {
-            if(arr[j] > arr[j + 1])
+            if (arr[j] > arr[j + 1])
             {
                 swap(arr[j], arr[j + 1]);
             }
@@ -22,31 +25,31 @@ void bubbleSort(int arr[], int n)
 // Selection Sort
 void selectionSort(int arr[], int n)
 {
-    for(int i = 0; i < n - 1; i++)
+    for (int i = 0; i < n - 1; i++)
     {
-        int min = i;
+        int minIndex = i;
 
-        for(int j = i + 1; j < n; j++)
+        for (int j = i + 1; j < n; j++)
         {
-            if(arr[j] < arr[min])
+            if (arr[j] < arr[minIndex])
             {
-                min = j;
+                minIndex = j;
             }
         }
 
-        swap(arr[i], arr[min]);
+        swap(arr[i], arr[minIndex]);
     }
 }
 
 // Insertion Sort
 void insertionSort(int arr[], int n)
 {
-    for(int i = 1; i < n; i++)
+    for (int i = 1; i < n; i++)
     {
         int key = arr[i];
         int j = i - 1;
 
-        while(j >= 0 && arr[j] > key)
+        while (j >= 0 && arr[j] > key)
         {
             arr[j + 1] = arr[j];
             j--;
@@ -65,21 +68,21 @@ void merge(int arr[], int low, int mid, int high)
     int j = mid + 1;
     int k = low;
 
-    while(i <= mid && j <= high)
+    while (i <= mid && j <= high)
     {
-        if(arr[i] <= arr[j])
+        if (arr[i] <= arr[j])
             temp[k++] = arr[i++];
         else
             temp[k++] = arr[j++];
     }
 
-    while(i <= mid)
+    while (i <= mid)
         temp[k++] = arr[i++];
 
-    while(j <= high)
+    while (j <= high)
         temp[k++] = arr[j++];
 
-    for(int i = low; i <= high; i++)
+    for (int i = low; i <= high; i++)
     {
         arr[i] = temp[i];
     }
@@ -88,9 +91,9 @@ void merge(int arr[], int low, int mid, int high)
 // Merge Sort
 void mergeSort(int arr[], int low, int high)
 {
-    if(low < high)
+    if (low < high)
     {
-        int mid = (low + high) / 2;
+        int mid = low + (high - low) / 2;
 
         mergeSort(arr, low, mid);
         mergeSort(arr, mid + 1, high);
@@ -99,22 +102,23 @@ void mergeSort(int arr[], int low, int high)
     }
 }
 
-// Partition Function (First Element as Pivot)
+// Partition Function
 int partition(int arr[], int low, int high)
 {
     int pivot = arr[low];
+
     int i = low;
     int j = high;
 
-    while(i < j)
+    while (i < j)
     {
-        while(arr[i] <= pivot && i < high)
+        while (i < high && arr[i] <= pivot)
             i++;
 
-        while(arr[j] > pivot && j > low)
+        while (j > low && arr[j] > pivot)
             j--;
 
-        if(i < j)
+        if (i < j)
             swap(arr[i], arr[j]);
     }
 
@@ -126,7 +130,7 @@ int partition(int arr[], int low, int high)
 // Quick Sort
 void quickSort(int arr[], int low, int high)
 {
-    if(low < high)
+    if (low < high)
     {
         int p = partition(arr, low, high);
 
@@ -142,67 +146,79 @@ int main()
     int arr[n];
     int temp[n];
 
+    // Generate random numbers
     srand(time(0));
 
-    for(int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
+    {
         arr[i] = rand() % 1000;
+    }
 
     cout << "Number of Elements = " << n << "\n\n";
 
-    // Bubble Sort
-    for(int i = 0; i < n; i++)
-        temp[i] = arr[i];
+    // ---------------- Bubble Sort ----------------
+    copy(arr, arr + n, temp);
 
     auto start = high_resolution_clock::now();
+
     bubbleSort(temp, n);
+
     auto stop = high_resolution_clock::now();
 
     cout << "Bubble Sort Time    : "
          << duration_cast<microseconds>(stop - start).count()
          << " microseconds\n";
 
-    // Selection Sort
-    for(int i = 0; i < n; i++)
-        temp[i] = arr[i];
+
+    // ---------------- Selection Sort ----------------
+    copy(arr, arr + n, temp);
 
     start = high_resolution_clock::now();
+
     selectionSort(temp, n);
+
     stop = high_resolution_clock::now();
 
     cout << "Selection Sort Time : "
          << duration_cast<microseconds>(stop - start).count()
          << " microseconds\n";
 
-    // Insertion Sort
-    for(int i = 0; i < n; i++)
-        temp[i] = arr[i];
+
+    // ---------------- Insertion Sort ----------------
+    copy(arr, arr + n, temp);
 
     start = high_resolution_clock::now();
+
     insertionSort(temp, n);
+
     stop = high_resolution_clock::now();
 
     cout << "Insertion Sort Time : "
          << duration_cast<microseconds>(stop - start).count()
          << " microseconds\n";
 
-    // Merge Sort
-    for(int i = 0; i < n; i++)
-        temp[i] = arr[i];
+
+    // ---------------- Merge Sort ----------------
+    copy(arr, arr + n, temp);
 
     start = high_resolution_clock::now();
+
     mergeSort(temp, 0, n - 1);
+
     stop = high_resolution_clock::now();
 
     cout << "Merge Sort Time     : "
          << duration_cast<microseconds>(stop - start).count()
          << " microseconds\n";
 
-    // Quick Sort
-    for(int i = 0; i < n; i++)
-        temp[i] = arr[i];
+
+    // ---------------- Quick Sort ----------------
+    copy(arr, arr + n, temp);
 
     start = high_resolution_clock::now();
+
     quickSort(temp, 0, n - 1);
+
     stop = high_resolution_clock::now();
 
     cout << "Quick Sort Time     : "
